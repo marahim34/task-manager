@@ -1,0 +1,415 @@
+# Task Manager API Tests (VS Code REST Client)
+
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+###  Variables populated from responses
+# @userToken = {{loginUser.response.body.token}}
+# @adminToken = {{loginAdmin.response.body.token}}
+# @taskId = {{createTask.response.body.task._id}}
+# @task2Id = {{createTask2.response.body.task._id}}
+# @adminTaskId = {{createAdminTask.response.body.task._id}}
+
+###############################################
+# HEALTH CHECK
+###############################################
+
+### 1. Health Check
+GET {{baseUrl}}/../
+Accept: application/json
+
+
+###############################################
+# AUTHENTICATION TESTS
+###############################################
+
+### 2. Register Regular User
+# @name registerUser
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "abc@example.com",
+  "password": "password123",
+  "name": "Antii Ball",
+  "role": "regular"
+}
+
+### 3. Register Admin User
+# @name registerAdmin
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "admin@example.com",
+  "password": "admin123456",
+  "name": "Admin User",
+  "role": "admin"
+}
+
+### 4. Register Another Regular User
+# @name registerUser2
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "jane.smith@example.com",
+  "password": "jane123456",
+  "name": "Jane Smith",
+  "role": "regular"
+}
+
+### 5. Login as Regular User
+# @name loginUser
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "abc@example.com",
+  "password": "password123"
+}
+
+### 6. Login as Admin
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "admin@example.com",
+  "password": "admin123456"
+}
+
+### 7. Test Invalid Login
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "abc@example.com",
+  "password": "wrongpassword"
+}
+
+### 8. Test Registration Validation - Missing Fields
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "test@example.com"
+}
+
+### 9. Test Registration Validation - Invalid Email
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "not-an-email",
+  "password": "password123",
+  "name": "Test User"
+}
+
+### 10. Test Registration - Duplicate Email
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "abc@example.com",
+  "password": "password123",
+  "name": "Another User"
+}
+
+
+###############################################
+# TASK CRUD OPERATIONS - REGULAR USER
+###############################################
+
+### 11. Create Task (Regular User)
+# @name createTask
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTMzODY4LCJleHAiOjE3NjYwMjAyNjh9.Q2jSOrrdnuo8FyCEIO_qbAJrXWDYnYwOKz0YrqPMz1o
+
+{
+  "title": "Complete backend assignment",
+  "description": "Build a task manager API with authentication and CRUD operations",
+  "status": "in-progress",
+  "priority": "high",
+  "category": "work",
+  "dueDate": "2025-12-19T09:00:00.000Z"
+}
+
+### 12. Create Another Task
+# @name createTask2
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "title": "Buy groceries",
+  "description": "Milk, eggs, bread, vegetables",
+  "priority": "medium",
+  "category": "personal",
+  "dueDate": "2025-12-17T18:00:00.000Z"
+}
+
+### 13. Create Completed Task
+# @name createCompletedTask
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "title": "Study MongoDB",
+  "description": "Learn about schemas, models, and queries",
+  "status": "completed",
+  "priority": "high",
+  "category": "education",
+  "completed": true
+}
+
+### 14. Create Task - Validation Error (Title Too Short)
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "title": "Hi",
+  "description": "This should fail"
+}
+
+### 15. Create Task - Validation Error (Invalid Status)
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "title": "Invalid status task",
+  "status": "invalid-status"
+}
+
+### 16. Get All Tasks (Regular User - own tasks only)
+GET {{baseUrl}}/tasks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 17. Get All Tasks with Filters - High Priority
+GET {{baseUrl}}/tasks?priority=high
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 18. Get All Tasks with Filters - Work Category
+GET {{baseUrl}}/tasks?category=work
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 19. Get All Tasks with Filters - Completed
+GET {{baseUrl}}/tasks?completed=true
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 20. Get All Tasks with Search
+GET {{baseUrl}}/tasks?search=backend
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 21. Get All Tasks - Date Range Filter
+GET {{baseUrl}}/tasks?dueAfter=2025-12-16T00:00:00.000Z&dueBefore=2025-12-20T00:00:00.000Z
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 22. Get All Tasks - Sorted by Due Date Ascending
+GET {{baseUrl}}/tasks?sort=dueDate&order=asc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 23. Get All Tasks - Multiple Filters Combined
+GET {{baseUrl}}/tasks?status=in-progress&priority=high&category=work
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 24. Get Single Task by ID
+GET {{baseUrl}}/tasks/694266e74dba1152843bb6e5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 25. Get Task - Invalid ID Format
+GET {{baseUrl}}/tasks/invalid-id-format
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+
+### 26. Get Task - Non-existent ID
+GET {{baseUrl}}/tasks/507f1f77bcf86cd799439011
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 27. Update Task - Mark as Completed
+PUT {{baseUrl}}/tasks/694266e74dba1152843bb6e5
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "status": "completed",
+  "completed": true
+}
+
+### 28. Update Task - Change Priority and Description
+PUT {{baseUrl}}/tasks/694203ccb5201ea8c0d9a6a9
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "priority": "low",
+  "description": "Updated description - assignment completed successfully!"
+}
+
+### 29. Update Task - Validation Error (No Fields)
+PUT {{baseUrl}}/tasks/694203ccb5201ea8c0d9a6a9
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+}
+
+### 30. Update Task - Invalid Priority Value
+PUT {{baseUrl}}/tasks/694203ccb5201ea8c0d9a6a9
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "priority": "invalid-priority"
+}
+
+
+###############################################
+# AUTHORIZATION TESTS
+###############################################
+
+### 31. Try to Access Tasks Without Token (should fail)
+GET {{baseUrl}}/tasks
+
+### 32. Try to Create Task Without Token (should fail)
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+
+{
+  "title": "Unauthorized task"
+}
+
+### 33. Try to Access Tasks with Invalid Token (should fail)
+GET {{baseUrl}}/tasks
+Authorization: Bearer invalid.token.here
+
+
+###############################################
+# ADMIN OPERATIONS
+###############################################
+
+### 34. Create Task as Admin
+# @name createAdminTask
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmZDE0Y2U4MzkxNGNmY2UzNDNmMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTk2MDAyNiwiZXhwIjoxNzY2MDQ2NDI2fQ.c7O4dOiucgJ7jIAy2P5axSkMkgYT0RcqGaOmkRifnVI
+
+{
+  "title": "Admin task - Review user reports",
+  "description": "Check all user-submitted reports for this week",
+  "priority": "high",
+  "category": "admin",
+  "dueDate": "2025-12-18T17:00:00.000Z"
+}
+
+### 35. Get All Tasks as Admin
+GET {{baseUrl}}/tasks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmZDE0Y2U4MzkxNGNmY2UzNDNmMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTk2MDAyNiwiZXhwIjoxNzY2MDQ2NDI2fQ.c7O4dOiucgJ7jIAy2P5axSkMkgYT0RcqGaOmkRifnVI
+
+### 36. Get Statistics
+GET {{baseUrl}}/tasks/stats/overview
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmZDE0Y2U4MzkxNGNmY2UzNDNmMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTk2MDAyNiwiZXhwIjoxNzY2MDQ2NDI2fQ.c7O4dOiucgJ7jIAy2P5axSkMkgYT0RcqGaOmkRifnVI
+
+### 37. Try to Get Statistics as Regular User (should fail)
+GET {{baseUrl}}/tasks/stats/overview
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmZDE0Y2U4MzkxNGNmY2UzNDNmMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTk2MDAyNiwiZXhwIjoxNzY2MDQ2NDI2fQ.c7O4dOiucgJ7jIAy2P5axSkMkgYT0RcqGaOmkRifnVI
+
+### 38. Admin Updates Another User's Task
+PUT {{baseUrl}}/tasks/694203ccb5201ea8c0d9a6a9
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmZDE0Y2U4MzkxNGNmY2UzNDNmMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTk2MDAyNiwiZXhwIjoxNzY2MDQ2NDI2fQ.c7O4dOiucgJ7jIAy2P5axSkMkgYT0RcqGaOmkRifnVI
+
+{
+  "status": "completed",
+  "completed": true
+}
+
+### 39. Regular User Tries to Update Admin's Task (should fail)
+PUT {{baseUrl}}/tasks/694269cc4dba1152843bb6fa
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "status": "completed"
+}
+
+### 40. Admin Deletes User's Task
+DELETE {{baseUrl}}/tasks/694203ccb5201ea8c0d9a6a9
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmZDE0Y2U4MzkxNGNmY2UzNDNmMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTk2MDAyNiwiZXhwIjoxNzY2MDQ2NDI2fQ.c7O4dOiucgJ7jIAy2P5axSkMkgYT0RcqGaOmkRifnVI
+
+### 41. Regular User Tries to Delete Admin's Task 
+DELETE {{baseUrl}}/tasks/694269cc4dba1152843bb6fa
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+
+###############################################
+# EDGE CASES AND ERROR HANDLING
+###############################################
+
+### 42. Create Task with Future Due Date
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "title": "Future planning task",
+  "dueDate": "2026-01-15T10:00:00.000Z"
+}
+
+### 43. Create Task with Past Due Date 
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "title": "Past due task",
+  "dueDate": "2024-01-01T10:00:00.000Z"
+}
+
+### 44. Create Task with Minimal Required Fields
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "title": "Minimal task example"
+}
+
+### 45. Create Task with Maximum Description Length
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+{
+  "title": "Task with long description",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."
+}
+
+### 46. Update Task to Clear Due Date
+PUT {{baseUrl}}/tasks/694269cc4dba1152843bb6fa
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmZDE0Y2U4MzkxNGNmY2UzNDNmMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTk2MDAyNiwiZXhwIjoxNzY2MDQ2NDI2fQ.c7O4dOiucgJ7jIAy2P5axSkMkgYT0RcqGaOmkRifnVI
+
+{
+  "dueDate": null
+}
+
+### 47. Delete Task by Regular User
+DELETE {{baseUrl}}/tasks/694203ccb5201ea8c0d9a6a9
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 48. Try to Delete Already Deleted Task 
+DELETE {{baseUrl}}/tasks/694203ccb5201ea8c0d9a6a9
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmY2U0Y2U4MzkxNGNmY2UzNDNmMCIsInJvbGUiOiJyZWd1bGFyIiwiaWF0IjoxNzY1OTU5Mzc5LCJleHAiOjE3NjYwNDU3Nzl9.-ebVMAMOkM5FK6FoN1aiCD7cgGjEFPXDS1z5c7c4eFk
+
+### 49. Bulk Purge Completed Tasks (Admin Only)
+DELETE {{baseUrl}}/tasks/admin/purge-completed
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmZDE0Y2U4MzkxNGNmY2UzNDNmMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTk2MDAyNiwiZXhwIjoxNzY2MDQ2NDI2fQ.c7O4dOiucgJ7jIAy2P5axSkMkgYT0RcqGaOmkRifnVI
+
+### 50. Try to Purge as Regular User
+DELETE {{baseUrl}}/tasks/admin/purge-completed
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NDFmZDE0Y2U4MzkxNGNmY2UzNDNmMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTk2MDAyNiwiZXhwIjoxNzY2MDQ2NDI2fQ.c7O4dOiucgJ7jIAy2P5axSkMkgYT0RcqGaOmkRifnVI
